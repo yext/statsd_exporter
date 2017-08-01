@@ -40,6 +40,7 @@ var (
 	mappingConfig       = flag.String("statsd.mapping-config", "", "Metric mapping configuration file name.")
 	readBuffer          = flag.Int("statsd.read-buffer", 0, "Size (in bytes) of the operating system's transmit read buffer associated with the UDP connection. Please make sure the kernel parameters net.core.rmem_max is set to a value greater than the value specified.")
 	showVersion         = flag.Bool("version", false, "Print version information.")
+	dropUnmapped        = flag.Bool("statsd.drop-unmapped", false, "Drop statsd metrics which have no matched mapping configured.")
 )
 
 func serveHTTP() {
@@ -194,6 +195,6 @@ func main() {
 		}
 		go watchConfig(*mappingConfig, mapper)
 	}
-	exporter := NewExporter(mapper)
+	exporter := NewExporter(mapper, *dropUnmapped)
 	exporter.Listen(events)
 }
